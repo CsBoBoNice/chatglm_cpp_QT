@@ -1,19 +1,9 @@
 #ifndef CHAT_THREAD_H
 #define CHAT_THREAD_H
 
-#include    <QThread>
+#include <QThread>
 
 #include "chatglm.h"
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-
-#ifdef _WIN32
-    #include <codecvt>
-    #include <fcntl.h>
-    #include <io.h>
-    #include <windows.h>
-#endif
 
 // 系统设定
 #define CHAT_SYSTEM_SET ("You are ChatGLM3, a large language model trained by Zhipu.AI. Follow the user's instructions carefully. Respond using markdown.")
@@ -21,7 +11,7 @@
 // #define CHAT_SYSTEM_SET ("你是一位智能AI助手，你叫ChatGLM，你连接着一台电脑，但请注意不能联网。在使用Python解决任务时，你可以运行代码并得到结果，如果运行结果有错误，你需要尽可能对代码进行改进。")
 
 // 预设地址
-#define MODEL_PATH_BIN ("D:/ChatGLM3_6B/models/chatglm-ggml/chatglm3-6b-ggml_q4_0.bin")
+#define MODEL_PATH_BIN ("./ggml.bin")
 
 class ChatThread : public QThread
 {
@@ -48,8 +38,6 @@ protected:
 public:
     explicit ChatThread(QObject* parent = nullptr);
 
-    void diceBegin(); //开始掷骰子
-    void dicePause(); //暂停
     void stopThread(); //结束线程run()
 
 signals: // 信号

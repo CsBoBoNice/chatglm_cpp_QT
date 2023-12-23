@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Widget</string>
+   <string>ChatGLM_CPP_QT</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3" stretch="6,1,2">
    <item>

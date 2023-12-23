@@ -1,7 +1,7 @@
 #include "widget.h"
 #include "./ui_widget.h"
 
-#include<QDebug>
+#include <QDebug>
 
 #include <QMutex>
 #include <QMutexLocker>
@@ -9,6 +9,8 @@
 #include <QResource>
 
 #include <QFile>
+
+#include <iostream>
 
 #define FontPointSize_DEF 12
 
@@ -37,10 +39,7 @@ protected:
             char ch = traits_type::to_char_type(c);
             textBrowser->moveCursor(QTextCursor::End); // 将光标移动到末尾
 
-            // textBrowser->setFontPointSize(FontPointSize_DEF); // 设置字体大小
-
             textBrowser->insertPlainText(QString(ch));
-            // textBrowser->append(QString(ch)); // 使用append会有多余空行
 
             textBrowser->moveCursor(QTextCursor::End); // 将光标移动到末尾
         }
@@ -53,10 +52,7 @@ protected:
         QMutexLocker locker(&mutex); // 加锁
         textBrowser->moveCursor(QTextCursor::End); // 将光标移动到末尾
 
-        // textBrowser->setFontPointSize(FontPointSize_DEF); // 设置字体大小
-
         textBrowser->insertPlainText(QString::fromUtf8(s, n));
-        // textBrowser->append(QString(QString::fromUtf8(s, n))); // 使用append会有多余空行
 
         textBrowser->moveCursor(QTextCursor::End); // 将光标移动到末尾
 
@@ -91,14 +87,9 @@ Widget::Widget(QWidget* parent)
 {
     ui->setupUi(this);
 
-    // ui->textBrowser_put->setFontPointSize(FontPointSize_DEF); // 设置字体大小
-
-    // ui->textEdit_send->setFontPointSize(FontPointSize_DEF); // 设置字体大小
-
-    // ui->textEdit_put->setTextInteractionFlags(Qt::NoTextInteraction); // 设置不可选中
     ui->textBrowser_put->setReadOnly(true); // 设置只读
 
-    qDebug("hello");
+    qDebug("start...");
 
     QTextBrowserOutputStream& outputStream = QTextBrowserOutputStream::instance(ui->textBrowser_put);
 
@@ -136,11 +127,8 @@ Widget::~Widget()
 void Widget::Send_prompt()
 {
     QString send_str = ui->textEdit_send->toPlainText();
-    // ui->textEdit_put->append(send_str);
 
     ui->textEdit_send->clear(); // 清空输入
-
-    // ui->textEdit_send->setFontPointSize(FontPointSize_DEF); // 设置字体大小
 
     m_ChatThread->ChatInput(send_str);
 
@@ -181,16 +169,11 @@ void Widget::ChatOutput_show(QString str)
 {
     qDebug("ChatOutput_show: %s", str.toStdString().c_str());
 
-    // Get all text from QTextBrowser
+    // 从QTextBrowser获取所有文本
     QString allText = ui->textBrowser_put->toMarkdown();
 
-    // // 使用replace函数将'\n'替换为"\n\n"
-    // QString modifiedString = allText.replace("\n", "\n\n");
-
-    // Display the text in Markdown format
+    // 以Markdown格式显示文本
     ui->textBrowser_put->setMarkdown(allText);
 
     ui->textBrowser_put->moveCursor(QTextCursor::End); // 将光标移动到末尾
-
-    // ui->textEdit_put->append(str);
 }
