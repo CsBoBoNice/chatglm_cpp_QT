@@ -1,11 +1,13 @@
-cmake_minimum_required(VERSION 3.12)
-project(ChatGLM.cpp VERSION 0.0.1 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.5)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE STRING "")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE STRING "")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE STRING "")
+project(chatgml_cpp_qt VERSION 0.1 LANGUAGES CXX)
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall")
 
@@ -47,66 +49,76 @@ set_source_files_properties(${CPP_SOURCES} PROPERTIES COMPILE_FLAGS "-pedantic-e
 add_library(chatglm STATIC chatglm.cpp)
 target_link_libraries(chatglm PUBLIC ggml sentencepiece-static)
 
-add_executable(main main.cpp)
-target_link_libraries(main PRIVATE chatglm)
 
-# GoogleTest
-option(CHATGLM_ENABLE_TESTING "chatglm: enable testing" OFF)
-if (CHATGLM_ENABLE_TESTING)
-    enable_testing()
+#add_executable(main main.cpp)
+#target_link_libraries(main PRIVATE chatglm)
 
-    # ref: https://github.com/google/googletest/blob/main/googletest/README.md
-    include(FetchContent)
-    FetchContent_Declare(
-      googletest
-      # Specify the commit you depend on and update it regularly.
-      URL https://github.com/google/googletest/archive/refs/heads/main.zip
+
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+
+set(PROJECT_SOURCES
+        main.cpp
+        widget.cpp
+        widget.h
+        chat_thread.cpp
+        chat_thread.h
+        widget.ui
+)
+
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_executable(chatgml_cpp_qt
+        MANUAL_FINALIZATION
+        ${PROJECT_SOURCES}
+
     )
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
-    include(GoogleTest)
 
-    # Now simply link against gtest or gtest_main as needed. Eg
-    add_executable(chatglm_test chatglm_test.cpp)
-    target_link_libraries(chatglm_test PRIVATE chatglm gtest_main)
-    gtest_discover_tests(chatglm_test)
-endif ()
+# qt_add_binary_resources(resources resource.qrc DESTINATION resource.rcc)
 
-option(CHATGLM_ENABLE_PYBIND "chatglm: enable python binding" OFF)
-if (CHATGLM_ENABLE_PYBIND)
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-    set_target_properties(chatglm ggml sentencepiece-static PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-    add_subdirectory(third_party/pybind11)
-    pybind11_add_module(_C chatglm_pybind.cpp)
-    target_link_libraries(_C PRIVATE chatglm)
-endif ()
+# add_dependencies(chatgml_cpp_qt resources)
 
-# lint
-file(GLOB PY_SOURCES
-    ${PROJECT_SOURCE_DIR}/chatglm_cpp/*.py
-    ${PROJECT_SOURCE_DIR}/examples/*.py
-    ${PROJECT_SOURCE_DIR}/tests/*.py
-    ${PROJECT_SOURCE_DIR}/convert.py
-    ${PROJECT_SOURCE_DIR}/setup.py)
-add_custom_target(lint
-    COMMAND clang-format -i ${CPP_SOURCES}
-    COMMAND isort ${PY_SOURCES}
-    COMMAND black ${PY_SOURCES} --verbose)
+# Define target properties for Android with Qt 6 as:
+#    set_property(TARGET chatgml_cpp_qt APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
+# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
+else()
+    if(ANDROID)
+        add_library(chatgml_cpp_qt SHARED
+            ${PROJECT_SOURCES}
+        )
+# Define properties for Android with Qt 5 after find_package() calls as:
+#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+    else()
+        add_executable(chatgml_cpp_qt
+            ${PROJECT_SOURCES}
+        )
+    endif()
+endif()
 
-# mypy
-add_custom_target(mypy
-    mypy chatglm_cpp examples --exclude __init__.pyi
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+target_link_libraries(chatgml_cpp_qt PRIVATE chatglm Qt${QT_VERSION_MAJOR}::Widgets)
+#target_link_libraries(chatgml_cpp_qt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
+# If you are developing for iOS or macOS you should consider setting an
+# explicit, fixed bundle identifier manually though.
+if(${QT_VERSION} VERSION_LESS 6.1.0)
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.chatgml_cpp_qt)
+endif()
+set_target_properties(chatgml_cpp_qt PROPERTIES
+    ${BUNDLE_ID_OPTION}
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
 )
 
-# stub
-add_custom_target(stub
-    pybind11-stubgen chatglm_cpp -o .
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+include(GNUInstallDirs)
+install(TARGETS chatgml_cpp_qt
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-if (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-    add_definitions("/wd4267 /wd4244 /wd4305 /Zc:strictStrings /utf-8")
-endif ()
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_finalize_executable(chatgml_cpp_qt)
+endif()
