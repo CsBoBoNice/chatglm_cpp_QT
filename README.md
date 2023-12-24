@@ -58,12 +58,36 @@ git submodule update --init --recursive
 分享地址:
 
 ```
-还没上传
+链接：https://pan.baidu.com/s/11bHHquXxdTeX28MU3nTW-Q 
+提取码：nice 
 ```
 
 成功获取模型后将模型修改名称为ggml.bin放至代码运行路径，即exe文件夹
 
-### 编译运行
+## windows环境运行
+
+## Android环境运行
+
+### 安装apk
+
+编译好的apk位于apk目录下
+
+你需要提前将模型文件放至 /storage/emulated/0/chatglm 文件夹
+```
+/storage/emulated/0/chatglm/ggml.bin
+```
+
+安装运行即可
+
+### 编译
+
+### 切换分支
+
+使用如下命令切换到android分支
+
+```
+git checkout android
+```
 
 重要的事情说三遍:
 
@@ -74,21 +98,6 @@ git submodule update --init --recursive
 **注意编译时使用Release进行编译**
 
 
-
-
-
-
-### QT Fot Android
-
-### 切换分支
-
-使用如下命令切换到android分支
-
-```
-git checkout android
-```
-
-### 编译
 你需要提前将模型文件放至 /storage/emulated/0/chatglm 文件夹
 ```
 /storage/emulated/0/chatglm/ggml.bin
@@ -129,6 +138,15 @@ git checkout android
 然后勾选"包签名"
 选择你刚才创建的证书即可
 
+接下来 在"安卓自定义" 选择 "创建模板" ,一路确定即可
 
 
+
+### 异常
+
+1,打开软件立马出现闪退，那大概率就是模型文件未拷贝到指定位置
+
+2,当打开软件后输入问题，提交后，软件闪退，那我也不知道什么问题，请多试几次，或者请帮我解决这个问题谢谢
+
+3,已知android13无法运行此apk,我也不知道什么问题,请帮我解决这个问题,非常感谢
 

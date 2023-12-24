@@ -73,6 +73,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
 
 
+
+
     )
 
 # qt_add_binary_resources(resources resource.qrc DESTINATION resource.rcc)
