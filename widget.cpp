@@ -12,6 +12,8 @@
 
 #include <iostream>
 
+#include <QtCore/private/qandroidextras_p.h>
+
 #define FontPointSize_DEF 12
 
 /******************************************************************************************/
@@ -81,6 +83,37 @@ private:
 };
 /******************************************************************************************/
 
+/******************************************************************************************/
+// 获取android存储许可
+void get_android_storage_permisson()
+{
+
+    qInfo() << "anroid storage READ_EXTERNAL_STORAGE permission status: " << QtAndroidPrivate::checkPermission("android.permission.READ_EXTERNAL_STORAGE").result();
+    qInfo() << "anroid storage WRITE_EXTERNAL_STORAGE permission status: " << QtAndroidPrivate::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE").result();
+
+    qInfo() << "start get_android_storage_permisson";
+
+    if (QtAndroidPrivate::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE").result() == QtAndroidPrivate::Denied)
+    {
+        qInfo() << "Get WRITE_EXTERNAL_STORAGE Permission";
+        QtAndroidPrivate::requestPermission("android.permission.WRITE_EXTERNAL_STORAGE").waitForFinished();
+    }
+
+    if (QtAndroidPrivate::checkPermission("android.permission.READ_EXTERNAL_STORAGE").result() == QtAndroidPrivate::Denied)
+    {
+        qInfo() << "Get READ_EXTERNAL_STORAGE Permission";
+        QtAndroidPrivate::requestPermission("android.permission.READ_EXTERNAL_STORAGE").waitForFinished();
+
+    }
+
+    qInfo() << "anroid storage READ_EXTERNAL_STORAGE permission status: " << QtAndroidPrivate::checkPermission("android.permission.READ_EXTERNAL_STORAGE").result();
+    qInfo() << "anroid storage WRITE_EXTERNAL_STORAGE permission status: " << QtAndroidPrivate::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE").result();
+
+    qInfo() << "QtAndroidPrivate::Denied= " << QtAndroidPrivate::Denied;
+    qInfo() << "QtAndroidPrivate::Authorized= " << QtAndroidPrivate::Authorized;
+}
+/******************************************************************************************/
+
 Widget::Widget(QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
@@ -90,6 +123,9 @@ Widget::Widget(QWidget* parent)
     ui->textBrowser_put->setReadOnly(true); // 设置只读
 
     qDebug("start...");
+
+    // 获取android存储许可
+    get_android_storage_permisson();
 
     QTextBrowserOutputStream& outputStream = QTextBrowserOutputStream::instance(ui->textBrowser_put);
 

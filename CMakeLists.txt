@@ -56,6 +56,7 @@ target_link_libraries(chatglm PUBLIC ggml sentencepiece-static)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(Qt6 COMPONENTS Core REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -71,6 +72,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
 
+
     )
 
 # qt_add_binary_resources(resources resource.qrc DESTINATION resource.rcc)
@@ -78,8 +80,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 # add_dependencies(chatgml_cpp_qt resources)
 
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET chatgml_cpp_qt APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
+set_property(TARGET chatgml_cpp_qt APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+                ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
@@ -95,7 +97,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(chatgml_cpp_qt PRIVATE chatglm Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(chatgml_cpp_qt PRIVATE chatglm Qt${QT_VERSION_MAJOR}::Widgets Qt6::CorePrivate)
 #target_link_libraries(chatgml_cpp_qt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

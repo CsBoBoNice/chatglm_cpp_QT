@@ -11,7 +11,7 @@
 // #define CHAT_SYSTEM_SET ("你是一位智能AI助手，你叫ChatGLM，你连接着一台电脑，但请注意不能联网。在使用Python解决任务时，你可以运行代码并得到结果，如果运行结果有错误，你需要尽可能对代码进行改进。")
 
 // 预设地址
-#define MODEL_PATH_BIN ("./ggml.bin")
+#define MODEL_PATH_BIN ("/storage/emulated/0/chatglm/ggml.bin")
 
 class ChatThread : public QThread
 {
