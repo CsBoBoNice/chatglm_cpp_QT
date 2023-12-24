@@ -46,6 +46,8 @@ git submodule update --init --recursive
 
 
 
+成功获取模型后将模型修改名称为ggml.bin放至代码运行路径，即exe文件夹
+
 
 ### 获取模型文件
 
@@ -58,11 +60,17 @@ git submodule update --init --recursive
 分享地址:
 
 ```
-还没上传
+链接：https://pan.baidu.com/s/11bHHquXxdTeX28MU3nTW-Q 
+提取码：nice 
 ```
 
+### 运行
 
-### 编译运行
+当你将模型文件修改名称为ggml.bin放置exe目录下后，可直接运行chatgml_cpp_qt.exe体验
+
+
+
+### 编译
 
 重要的事情说三遍:
 
@@ -71,7 +79,6 @@ git submodule update --init --recursive
 **注意编译时使用Release进行编译**
 
 **注意编译时使用Release进行编译**
-
 
 
 
